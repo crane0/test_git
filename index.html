@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+
+<input type="file" name="xlfile" id="xlf" />
+<pre id="out"></pre>
+
+<script src="https://cdn.bootcss.com/xlsx/0.15.1/xlsx.core.min.js"></script>
+<script>
+
+var xlf = document.getElementById('xlf');
+var OUT = document.getElementById('out');
+
+xlf.addEventListener('change', function(e) {
+  var f = e.target.files[0];
+  var reader = new FileReader();
+  // 开始读取指定的 Blob中的内容, 一旦完成, e.target.result 中保存的将是被读取文件的 ArrayBuffer 数据对象.
+  reader.readAsArrayBuffer(f)
+  reader.onload = function(e) {
+    var workbook = XLSX.read(e.target.result, {type: 'array'})
+    var result = [];
+    workbook.SheetNames.forEach(function(sheetName) {
+      var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+      // console.log(roa)
+      result = [...result, ...roa]
+    });
+    var output = JSON.stringify(result, null, 2);
+    OUT.innerText = output;
+  };
+});
+</script>
+</body>
+</html>
